@@ -4,10 +4,11 @@
 
 ![FleetShield cover](docs/devpost-cover.svg)
 
-FleetShield is a failure-driven safety system for autonomous agents. It injects
-controlled operational faults, detects violated business invariants, compiles
-deterministic controls, and replays the exact counterexample before a control can
-be activated across a scoped fleet.
+FleetShield is a failure-driven safety system for autonomous agents, designed for
+community-relief coordinators who cannot afford a dedicated reliability team. It
+injects controlled operational faults, delegates analysis across a specialist ADK
+team, compiles deterministic controls, and replays the exact counterexample before
+a control can be activated across a scoped fleet.
 
 This repository contains a credential-free, reproducible sandbox plus the Google
 ADK/Gemini integration boundary used by the deployed hackathon build.
@@ -16,11 +17,11 @@ ADK/Gemini integration boundary used by the deployed hackathon build.
 
 The primary scenario exposes a classic distributed-systems failure:
 
-1. An invoice agent calls `post_payment`.
+1. A relief agent calls `release_emergency_grant`.
 2. The sandbox ledger commits the payment.
 3. The acknowledgement is lost and the tool appears to time out.
 4. The agent retries with a new action id.
-5. Without FleetShield, the invoice is paid twice.
+5. Without FleetShield, one emergency-aid case is paid twice.
 6. FleetShield compiles an exactly-once policy over `(tool_name, subject_id)`.
 7. After human approval, exact replay commits one payment and blocks the retry.
 
@@ -49,6 +50,13 @@ Run the machine-readable proof:
 ```bash
 curl -s -X POST http://localhost:8080/api/demo \
   -H 'content-type: application/json' -d '{}'
+```
+
+Or run the judge-oriented verifier against local or deployed FleetShield:
+
+```bash
+python scripts/verify_demo.py http://localhost:8080
+python scripts/verify_demo.py https://YOUR-SERVICE.run.app --require-cloud
 ```
 
 The acceptance boundary is:
@@ -85,16 +93,20 @@ move a policy to `active`; Gemini cannot activate a control.
 
 - **Gemini 3.5 Flash** interprets natural-language contracts and proposes typed
   invariant candidates.
-- **Google ADK** hosts the Contract Miner agent.
+- **Google ADK** executes a sequential team—Failure Analyst, Fleet Scope Analyst,
+  and Contract Miner—through its `Runner` event loop.
 - **Cloud Run** serves the control plane and deterministic enforcement boundary.
 - **Pub/Sub** delivers workflow and failure events with at-least-once semantics.
 - **Firestore** stores durable run state, counterexamples, policies, approvals,
-  and replay evidence in the production architecture.
+  replay evidence, and atomic ingress claims in the production architecture.
 - **Cloud Logging / Trace** records tool calls and latency without storing secrets.
 
 The local test suite deliberately runs without cloud credentials. The fallback in
 `app/adk_agent.py` labels itself `deterministic-fallback`; deployment evidence must
-show `source=gemini` before the submission claims live Gemini execution.
+show `source=google-adk:gemini:multi-agent` before the submission claims live
+Gemini execution.
+The non-secret `/api/evidence` endpoint reports the actual runtime, state backend,
+Cloud Run revision, observed Pub/Sub ingress, and the source of compiled policies.
 
 ## Safety model
 
@@ -107,6 +119,8 @@ show `source=gemini` before the submission claims live Gemini execution.
   invariant and benign traffic still succeeds.
 
 See [Architecture](docs/ARCHITECTURE.md), [Threat model](docs/THREAT_MODEL.md),
+[judging map](docs/JUDGING_MAP.md),
+[zero-budget cloud plan](docs/ZERO_BUDGET_CLOUD.md),
 [deployment gate](docs/DEPLOYMENT.md), [demo script](docs/DEMO_SCRIPT.md), and
 [Devpost draft](docs/DEVPOST.md).
 
@@ -122,12 +136,13 @@ See [Architecture](docs/ARCHITECTURE.md), [Threat model](docs/THREAT_MODEL.md),
 - [x] Exact replay proof
 - [x] Local dashboard and JSON API
 - [x] Unit tests
-- [x] Gemini/ADK boundary
+- [x] Google ADK Runner execution path
+- [x] Firestore production adapter (not yet deployed)
+- [x] Pub/Sub-compatible production ingress (not yet deployed)
+- [x] Public repository
 - [ ] Live Gemini evidence
-- [ ] Firestore production adapter
-- [ ] Pub/Sub production trigger
 - [ ] Cloud Run deployment
-- [ ] Public repository and demo video
+- [ ] Public demo video
 
 ## License
 

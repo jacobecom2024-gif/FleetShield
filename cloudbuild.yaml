@@ -3,16 +3,16 @@ steps:
     entrypoint: python
     args: ["-m", "unittest", "discover", "-s", "tests", "-v"]
   - name: gcr.io/cloud-builders/docker
-    args: ["build", "-t", "${_IMAGE}", "."]
+    args: ["build", "-t", "${_REGION}-docker.pkg.dev/${PROJECT_ID}/fleetshield/app:${SHORT_SHA}", "."]
   - name: gcr.io/cloud-builders/docker
-    args: ["push", "${_IMAGE}"]
+    args: ["push", "${_REGION}-docker.pkg.dev/${PROJECT_ID}/fleetshield/app:${SHORT_SHA}"]
   - name: gcr.io/google.com/cloudsdktool/cloud-sdk
     entrypoint: gcloud
     args:
       - run
       - deploy
       - fleetshield
-      - --image=${_IMAGE}
+      - --image=${_REGION}-docker.pkg.dev/${PROJECT_ID}/fleetshield/app:${SHORT_SHA}
       - --region=${_REGION}
       - --platform=managed
       - --allow-unauthenticated
@@ -22,9 +22,9 @@ steps:
       - --memory=512Mi
       - --concurrency=20
       - --timeout=60
-      - --set-env-vars=GEMINI_MODEL=gemini-3.5-flash,GOOGLE_GENAI_USE_VERTEXAI=true,FLEETSHIELD_STATE_BACKEND=firestore
+      - --set-env-vars=GEMINI_MODEL=gemini-3.5-flash,GOOGLE_GENAI_USE_VERTEXAI=true,GOOGLE_CLOUD_PROJECT=${PROJECT_ID},GOOGLE_CLOUD_LOCATION=${_VERTEX_LOCATION},FLEETSHIELD_STATE_BACKEND=firestore
 substitutions:
   _REGION: europe-west1
-  _IMAGE: europe-west1-docker.pkg.dev/$PROJECT_ID/fleetshield/app:$SHORT_SHA
+  _VERTEX_LOCATION: global
 images:
-  - ${_IMAGE}
+  - ${_REGION}-docker.pkg.dev/${PROJECT_ID}/fleetshield/app:${SHORT_SHA}
