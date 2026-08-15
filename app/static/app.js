@@ -17,6 +17,12 @@ const ui = {
   proofScore: $("#proof-score"),
   proofCopy: $("#proof-copy"),
   meter: $("#meter-fill"),
+  runtimeVerdict: $("#runtime-verdict"),
+  runtimeExecution: $("#runtime-execution"),
+  runtimeModel: $("#runtime-model"),
+  runtimeCompute: $("#runtime-compute"),
+  runtimeState: $("#runtime-state"),
+  runtimePubsub: $("#runtime-pubsub"),
 };
 
 let stage = 0;
@@ -31,6 +37,25 @@ async function request(path, payload = {}) {
   const data = await response.json();
   if (!response.ok) throw new Error(data.message || data.error || "Request failed");
   return data;
+}
+
+async function refreshEvidence() {
+  const response = await fetch("/api/evidence", { cache: "no-store" });
+  const evidence = await response.json();
+  const runtime = evidence.runtime;
+  const proof = evidence.qualifying_evidence;
+  ui.runtimeExecution.textContent = runtime.contract_miner;
+  ui.runtimeModel.textContent = runtime.model;
+  ui.runtimeCompute.textContent = runtime.cloud_run
+    ? `Cloud Run · ${runtime.cloud_run_revision}`
+    : "local";
+  ui.runtimeState.textContent = runtime.state_backend;
+  ui.runtimePubsub.textContent = proof.pubsub_events_observed ? "observed" : "not observed";
+  const cloudProof = proof.google_adk_executed && proof.cloud_run_active;
+  ui.runtimeVerdict.textContent = cloudProof
+    ? "Cloud + ADK + Gemini execution verified"
+    : "Reproducible local proof — cloud claims disabled";
+  ui.runtimeVerdict.className = cloudProof ? "verified" : "local-proof";
 }
 
 function setStage(next, copy) {
@@ -111,6 +136,7 @@ async function discover() {
   const data = await request("/api/discover");
   activePolicyId = data.policies.find((policy) => policy.invariant_type === "exactly_once")?.policy_id;
   renderPolicies(data.policies);
+  await refreshEvidence();
   setStage(2, "Three candidate controls compiled in shadow mode.");
 }
 
@@ -118,7 +144,7 @@ async function activate() {
   await request("/api/activate", { policy_id: activePolicyId, approved_by: "hackathon-demo-reviewer" });
   const state = await fetch("/api/state").then((response) => response.json());
   renderPolicies(state.policies);
-  setStage(3, "Exactly-once control approved and propagated to the financial fleet.");
+  setStage(3, "Exactly-once control approved and propagated to the community-relief fleet.");
 }
 
 async function replay() {
@@ -154,3 +180,6 @@ ui.discover.addEventListener("click", () => discover().catch((error) => ui.proof
 ui.activate.addEventListener("click", () => activate().catch((error) => ui.proofCopy.textContent = error.message));
 ui.replay.addEventListener("click", () => replay().catch((error) => ui.proofCopy.textContent = error.message));
 ui.runDemo.addEventListener("click", fullDemo);
+refreshEvidence().catch(() => {
+  ui.runtimeVerdict.textContent = "Runtime evidence unavailable";
+});

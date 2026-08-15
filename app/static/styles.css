@@ -59,6 +59,15 @@ h1 span { color: var(--green); }
 .scorecard > p:last-child { color: #b7c2bc; font-size: 13px; line-height: 1.55; }
 
 .proof-grid { display: grid; grid-template-columns: .75fr 1.25fr; gap: 18px; padding-bottom: 70px; }
+.runtime-proof { display: grid; grid-template-columns: 1.05fr 2fr auto; align-items: center; gap: 28px; margin: -20px 0 22px; padding: 20px 22px; border: 1px solid rgba(181,190,182,.7); border-radius: 18px; background: rgba(255,255,251,.72); box-shadow: var(--shadow); }
+.runtime-proof strong { display: block; margin-top: 5px; font-size: 13px; }
+.runtime-proof strong.verified { color: var(--green); }
+.runtime-proof strong.local-proof { color: var(--amber); }
+.runtime-proof dl { display: grid; grid-template-columns: repeat(5, minmax(0, 1fr)); gap: 14px; margin: 0; }
+.runtime-proof dl div { min-width: 0; }
+.runtime-proof dt { color: var(--muted); font: 700 9px/1.3 ui-monospace, SFMono-Regular, Menlo, monospace; text-transform: uppercase; }
+.runtime-proof dd { overflow: hidden; margin: 5px 0 0; text-overflow: ellipsis; white-space: nowrap; font: 700 10px/1.3 ui-monospace, SFMono-Regular, Menlo, monospace; }
+.runtime-proof a { color: var(--green); font-size: 11px; font-weight: 750; text-decoration: none; white-space: nowrap; }
 .panel { min-height: 360px; padding: 25px; border: 1px solid rgba(181,190,182,.7); border-radius: 22px; background: var(--panel); backdrop-filter: blur(16px); box-shadow: var(--shadow); }
 .panel-heading { display: flex; align-items: flex-start; justify-content: space-between; gap: 20px; margin-bottom: 24px; }
 .panel h2, .fleet-strip h2 { margin: 5px 0 0; font-size: 24px; letter-spacing: -.035em; }
@@ -110,6 +119,8 @@ footer { display: flex; justify-content: space-between; gap: 30px; padding: 25px
   .hero { grid-template-columns: 1fr; gap: 30px; padding-top: 35px; }
   .scorecard { transform: none; }
   .proof-grid { grid-template-columns: 1fr; }
+  .runtime-proof { grid-template-columns: 1fr; }
+  .runtime-proof dl { grid-template-columns: repeat(3, minmax(0, 1fr)); }
   .fleet-strip { align-items: flex-start; flex-direction: column; }
   .fleet { flex-wrap: wrap; }
 }
@@ -120,6 +131,6 @@ footer { display: flex; justify-content: space-between; gap: 30px; padding: 25px
   h1 { font-size: 54px; }
   .actions { align-items: stretch; flex-direction: column; }
   .ledger { grid-template-columns: 1fr; }
+  .runtime-proof dl { grid-template-columns: repeat(2, minmax(0, 1fr)); }
   footer { flex-direction: column; }
 }
-

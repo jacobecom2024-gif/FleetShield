@@ -14,7 +14,7 @@
         <span class="mark">FS</span>
         <span>FleetShield</span>
       </a>
-      <div class="system-status"><span class="dot"></span> sandbox online</div>
+      <div class="system-status"><span class="dot"></span> control plane online</div>
     </header>
 
     <main>
@@ -37,6 +37,21 @@
           <div class="meter"><span id="meter-fill"></span></div>
           <p id="proof-copy">Ready to inject a controlled failure.</p>
         </div>
+      </section>
+
+      <section class="runtime-proof" aria-label="Verifiable runtime evidence">
+        <div>
+          <p class="step">LIVE RUNTIME EVIDENCE</p>
+          <strong id="runtime-verdict">Checking deployment…</strong>
+        </div>
+        <dl>
+          <div><dt>Execution</dt><dd id="runtime-execution">—</dd></div>
+          <div><dt>Model</dt><dd id="runtime-model">—</dd></div>
+          <div><dt>Compute</dt><dd id="runtime-compute">—</dd></div>
+          <div><dt>State</dt><dd id="runtime-state">—</dd></div>
+          <div><dt>Pub/Sub</dt><dd id="runtime-pubsub">—</dd></div>
+        </dl>
+        <a href="/api/evidence" target="_blank" rel="noreferrer">Inspect JSON evidence ↗</a>
       </section>
 
       <section class="proof-grid" aria-live="polite">
@@ -111,9 +126,9 @@
           <h2>A control learned once, scoped before propagation.</h2>
         </div>
         <div class="fleet">
-          <div class="agent"><span>I</span><b>Invoice</b><small>post_payment</small></div>
-          <div class="agent"><span>R</span><b>Refund</b><small>post_refund</small></div>
-          <div class="agent"><span>P</span><b>Payout</b><small>post_payout</small></div>
+          <div class="agent"><span>G</span><b>Relief grant</b><small>release_grant</small></div>
+          <div class="agent"><span>M</span><b>Medicine</b><small>issue_voucher</small></div>
+          <div class="agent"><span>S</span><b>Shelter</b><small>pay_provider</small></div>
         </div>
       </section>
     </main>
@@ -125,4 +140,3 @@
     <script src="/app.js" defer></script>
   </body>
 </html>
-
