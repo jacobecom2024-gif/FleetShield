@@ -1,0 +1,61 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1600" height="900" viewBox="0 0 1600 900" role="img" aria-labelledby="title desc">
+  <title id="title">FleetShield cover</title>
+  <desc id="desc">Dark green product cover with the FleetShield name, tagline, and a visual transition from a duplicated effect to a protected single effect.</desc>
+  <defs>
+    <linearGradient id="bg" x1="0" x2="1" y1="0" y2="1">
+      <stop offset="0" stop-color="#0c1711"/>
+      <stop offset="1" stop-color="#164d38"/>
+    </linearGradient>
+    <radialGradient id="glow">
+      <stop offset="0" stop-color="#b8f35a" stop-opacity=".35"/>
+      <stop offset="1" stop-color="#b8f35a" stop-opacity="0"/>
+    </radialGradient>
+    <filter id="soft"><feGaussianBlur stdDeviation="35"/></filter>
+    <style>
+      .tiny{font:700 18px ui-monospace,SFMono-Regular,Menlo,monospace;letter-spacing:3px;fill:#b8f35a}
+      .name{font:780 108px Inter,Arial,sans-serif;letter-spacing:-6px;fill:white}
+      .tag{font:650 44px Inter,Arial,sans-serif;letter-spacing:-1.5px;fill:#c9d9d0}
+      .card-title{font:750 21px Inter,Arial,sans-serif;fill:white}
+      .card-copy{font:600 15px ui-monospace,SFMono-Regular,Menlo,monospace;fill:#aabbb1}
+    </style>
+  </defs>
+  <rect width="1600" height="900" fill="url(#bg)"/>
+  <circle cx="1290" cy="210" r="480" fill="url(#glow)"/>
+  <circle cx="410" cy="960" r="410" fill="#b8f35a" opacity=".08" filter="url(#soft)"/>
+  <g transform="translate(105 94)">
+    <rect width="58" height="58" rx="17" fill="#b8f35a"/>
+    <text x="29" y="37" text-anchor="middle" font-family="Inter,Arial" font-size="18" font-weight="850" fill="#155d42">FS</text>
+    <text x="82" y="37" class="tiny">FAILURE-DRIVEN AGENT SAFETY</text>
+  </g>
+  <text x="105" y="345" class="name">FleetShield</text>
+  <text x="105" y="418" class="tag">One failure immunizes the fleet.</text>
+  <text x="108" y="477" font-family="Inter,Arial" font-size="23" fill="#91a89a">Discover · attack · compile · replay · protect</text>
+
+  <g transform="translate(105 610)">
+    <rect width="405" height="155" rx="25" fill="#ffffff" fill-opacity=".06" stroke="#ffffff" stroke-opacity=".13"/>
+    <circle cx="45" cy="45" r="17" fill="#c84338"/>
+    <text x="78" y="51" class="card-title">Vulnerable replay</text>
+    <text x="28" y="101" class="card-copy">EXPECTED 1 · OBSERVED 2</text>
+    <rect x="28" y="122" width="349" height="5" rx="3" fill="#c84338"/>
+  </g>
+  <path d="M548 688h116" stroke="#b8f35a" stroke-width="3" stroke-linecap="round"/>
+  <path d="M649 674l16 14-16 14" fill="none" stroke="#b8f35a" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>
+  <g transform="translate(702 610)">
+    <rect width="480" height="155" rx="25" fill="#b8f35a" fill-opacity=".09" stroke="#b8f35a" stroke-opacity=".45"/>
+    <circle cx="45" cy="45" r="17" fill="#b8f35a"/>
+    <path d="M37 45l6 6 11-14" fill="none" stroke="#155d42" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/>
+    <text x="78" y="51" class="card-title">Protected exact replay</text>
+    <text x="28" y="101" class="card-copy">EXPECTED 1 · OBSERVED 1 · BLOCKED 1</text>
+    <rect x="28" y="122" width="424" height="5" rx="3" fill="#b8f35a"/>
+  </g>
+  <g transform="translate(1250 610)">
+    <rect width="245" height="155" rx="25" fill="#ffffff" fill-opacity=".06" stroke="#ffffff" stroke-opacity=".13"/>
+    <text x="28" y="45" class="card-copy">PROTECTED FLEET</text>
+    <circle cx="55" cy="96" r="25" fill="#b8f35a"/><circle cx="122" cy="96" r="25" fill="#b8f35a"/><circle cx="189" cy="96" r="25" fill="#b8f35a"/>
+    <text x="55" y="102" text-anchor="middle" font-family="Inter" font-size="17" font-weight="800" fill="#155d42">I</text>
+    <text x="122" y="102" text-anchor="middle" font-family="Inter" font-size="17" font-weight="800" fill="#155d42">R</text>
+    <text x="189" y="102" text-anchor="middle" font-family="Inter" font-size="17" font-weight="800" fill="#155d42">P</text>
+  </g>
+  <text x="105" y="842" class="card-copy">GEMINI 3.5 FLASH · GOOGLE ADK · CLOUD RUN · PUB/SUB · FIRESTORE</text>
+</svg>
+

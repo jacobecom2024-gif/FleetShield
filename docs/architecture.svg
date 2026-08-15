@@ -1,0 +1,121 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1600" height="900" viewBox="0 0 1600 900" role="img" aria-labelledby="title desc">
+  <title id="title">FleetShield production architecture</title>
+  <desc id="desc">Flow from contracts and Pub/Sub events through Google ADK and Gemini, deterministic policy compilation, sandbox replay, approval, enforcement, Firestore, and Cloud observability.</desc>
+  <defs>
+    <linearGradient id="bg" x1="0" x2="1" y1="0" y2="1">
+      <stop offset="0" stop-color="#f8f9f4"/>
+      <stop offset="1" stop-color="#eaf0e9"/>
+    </linearGradient>
+    <filter id="shadow" x="-20%" y="-20%" width="140%" height="140%">
+      <feDropShadow dx="0" dy="14" stdDeviation="18" flood-color="#173e2d" flood-opacity=".12"/>
+    </filter>
+    <marker id="arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+      <path d="M 0 0 L 10 5 L 0 10 z" fill="#61806d"/>
+    </marker>
+    <style>
+      .label{font:700 15px ui-monospace,SFMono-Regular,Menlo,monospace;letter-spacing:1.7px;fill:#155d42}
+      .title{font:760 32px Inter,Arial,sans-serif;letter-spacing:-1.2px;fill:#101713}
+      .node-title{font:740 19px Inter,Arial,sans-serif;fill:#101713}
+      .node-copy{font:500 13px Inter,Arial,sans-serif;fill:#647169}
+      .small{font:650 12px ui-monospace,SFMono-Regular,Menlo,monospace;fill:#466052}
+      .edge{fill:none;stroke:#6e8978;stroke-width:2.5;marker-end:url(#arrow)}
+      .card{fill:#fffffb;stroke:#cfdbd2;stroke-width:1.5;filter:url(#shadow)}
+      .google{fill:#edf6ff;stroke:#a8c9ed}
+      .det{fill:#effbdc;stroke:#a8d561}
+      .store{fill:#f1eeff;stroke:#c1b8ec}
+    </style>
+  </defs>
+  <rect width="1600" height="900" fill="url(#bg)"/>
+  <circle cx="1440" cy="100" r="260" fill="#b8f35a" opacity=".16"/>
+  <text x="90" y="86" class="label">FLEETSHIELD / PRODUCTION TOPOLOGY</text>
+  <text x="90" y="132" class="title">The model proposes. Deterministic controls decide.</text>
+
+  <path class="edge" d="M300 285 C350 285 365 285 415 285"/>
+  <path class="edge" d="M620 285 C670 285 685 285 735 285"/>
+  <path class="edge" d="M940 285 C990 285 1005 285 1055 285"/>
+  <path class="edge" d="M1260 285 C1310 285 1325 285 1375 285"/>
+  <path class="edge" d="M1158 370 C1158 430 1024 433 1024 495"/>
+  <path class="edge" d="M1158 370 C1158 430 1288 433 1288 495"/>
+  <path class="edge" d="M1024 615 C1024 673 880 676 880 730"/>
+  <path class="edge" d="M1288 615 C1288 673 1105 676 1105 730"/>
+  <path class="edge" d="M795 790 C710 790 710 650 625 650"/>
+
+  <g transform="translate(90 215)">
+    <rect class="card" width="210" height="140" rx="22"/>
+    <rect x="20" y="20" width="38" height="38" rx="11" fill="#155d42"/>
+    <path d="M31 40h16M39 32v16" stroke="#b8f35a" stroke-width="3" stroke-linecap="round"/>
+    <text x="20" y="84" class="node-title">Contracts + traces</text>
+    <text x="20" y="109" class="node-copy">Untrusted operational input</text>
+  </g>
+
+  <g transform="translate(415 215)">
+    <rect class="card google" width="205" height="140" rx="22"/>
+    <text x="20" y="45" class="small">GOOGLE ADK</text>
+    <text x="20" y="81" class="node-title">Contract Miner</text>
+    <text x="20" y="106" class="node-copy">Gemini 3.5 Flash</text>
+  </g>
+
+  <g transform="translate(735 215)">
+    <rect class="card det" width="205" height="140" rx="22"/>
+    <text x="20" y="45" class="small">ALLOWLISTED JSON</text>
+    <text x="20" y="81" class="node-title">Invariant candidate</text>
+    <text x="20" y="106" class="node-copy">Typed, inspectable, inactive</text>
+  </g>
+
+  <g transform="translate(1055 215)">
+    <rect class="card det" width="205" height="155" rx="22"/>
+    <text x="20" y="45" class="small">DETERMINISTIC CORE</text>
+    <text x="20" y="81" class="node-title">Policy compiler</text>
+    <text x="20" y="106" class="node-copy">Stable id + CEL expression</text>
+    <text x="20" y="128" class="node-copy">proposed → shadow</text>
+  </g>
+
+  <g transform="translate(1375 215)">
+    <rect class="card" width="150" height="140" rx="22"/>
+    <text x="20" y="45" class="small">CONTROL</text>
+    <text x="20" y="80" class="node-title">Approval</text>
+    <text x="20" y="105" class="node-copy">Named human</text>
+  </g>
+
+  <g transform="translate(920 495)">
+    <rect class="card google" width="208" height="120" rx="22"/>
+    <text x="20" y="40" class="small">CLOUD RUN JOB</text>
+    <text x="20" y="73" class="node-title">Fault + replay</text>
+    <text x="20" y="96" class="node-copy">Exact counterexample</text>
+  </g>
+
+  <g transform="translate(1184 495)">
+    <rect class="card" width="208" height="120" rx="22"/>
+    <text x="20" y="40" class="small">REFERENCE MONITOR</text>
+    <text x="20" y="73" class="node-title">Tool enforcement</text>
+    <text x="20" y="96" class="node-copy">Allow or block pre-effect</text>
+  </g>
+
+  <g transform="translate(795 730)">
+    <rect class="card store" width="170" height="120" rx="22"/>
+    <text x="20" y="40" class="small">FIRESTORE</text>
+    <text x="20" y="73" class="node-title">Durable state</text>
+    <text x="20" y="96" class="node-copy">Runs, rules, evidence</text>
+  </g>
+
+  <g transform="translate(1020 730)">
+    <rect class="card google" width="170" height="120" rx="22"/>
+    <text x="20" y="40" class="small">CLOUD TRACE</text>
+    <text x="20" y="73" class="node-title">Observability</text>
+    <text x="20" y="96" class="node-copy">Latency + tool calls</text>
+  </g>
+
+  <g transform="translate(390 580)">
+    <rect x="0" y="0" width="235" height="140" rx="22" fill="#155d42" filter="url(#shadow)"/>
+    <text x="20" y="42" class="small" fill="#b8f35a">PUB/SUB + MCP</text>
+    <text x="20" y="79" class="node-title" fill="#ffffff">Protected fleet</text>
+    <text x="20" y="106" class="node-copy" fill="#c4d7cb">Invoice · Refund · Payout</text>
+  </g>
+
+  <g transform="translate(90 785)">
+    <rect width="530" height="60" rx="16" fill="#ffffff" stroke="#cfdbd2"/>
+    <circle cx="30" cy="30" r="9" fill="#b8f35a"/>
+    <text x="52" y="35" class="node-copy">Every transition is idempotent; every fleet policy is scoped and approval-gated.</text>
+  </g>
+</svg>
+
