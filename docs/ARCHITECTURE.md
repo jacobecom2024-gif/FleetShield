@@ -8,16 +8,18 @@ only the policy compiler and reference monitor decide whether a tool call procee
 
 ```mermaid
 flowchart TD
-    A["Agent contract + traces"] --> B["Gemini Contract Miner"]
-    B --> C["Typed invariant candidate"]
-    C --> D["Deterministic compiler"]
-    D --> E["Shadow policy"]
-    E --> F["Adversarial replay"]
-    F --> G{"Regression suite passes?"}
-    G -- No --> H["Reject candidate"]
-    G -- Yes --> I["Human approval"]
-    I --> J["Reference monitor"]
-    J --> K["Scoped fleet tools"]
+    A["Agent contract + traces"] --> B["Failure Analyst"]
+    B --> C["Fleet Scope Analyst"]
+    C --> D["Contract Miner"]
+    D --> E["Typed invariant candidate"]
+    E --> F["Deterministic compiler"]
+    F --> G["Shadow policy"]
+    G --> H["Adversarial replay"]
+    H --> I{"Regression suite passes?"}
+    I -- No --> J["Reject candidate"]
+    I -- Yes --> K["Human approval"]
+    K --> L["Reference monitor"]
+    L --> M["Scoped fleet tools"]
 ```
 
 ## Production topology
@@ -34,6 +36,14 @@ flowchart TD
 ```
 
 ## Components
+
+### Google ADK safety team
+
+The Failure Analyst reconstructs the ambiguous commit and retry path. The Fleet
+Scope Analyst determines which declared agent class may inherit a control and what
+benign behavior must remain valid. The Contract Miner then proposes only an
+allowlisted invariant schema. ADK runs the three specialists sequentially and
+shares their structured findings through session state.
 
 ### Contract Miner
 
@@ -77,6 +87,7 @@ Firestore collections in the deployed version:
 - `policies/{policy_id}`
 - `approvals/{approval_id}`
 - `ledger/{entry_id}`
+- `ingress_messages/{message_id}`
 
 Every state transition uses an idempotency key. Pub/Sub redelivery is expected,
 not treated as an exception.
@@ -89,4 +100,3 @@ not treated as an exception.
 4. Experiment tools cannot access production credentials.
 5. Fleet propagation requires a human approval record.
 6. The reference monitor, not the agent, owns the final tool authorization.
-

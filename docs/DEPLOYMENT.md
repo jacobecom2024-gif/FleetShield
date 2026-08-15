@@ -56,7 +56,9 @@ curl -s -X POST "$SERVICE_URL/api/demo" \
 
 The production evidence is acceptable only when:
 
-- policy `discovered_from` begins with `gemini:`;
+- policy `discovered_from` begins with `google-adk:gemini:multi-agent:`;
+- `/api/evidence` reports `google_adk_executed` and `cloud_run_active` as true;
+- if Firestore is claimed as live, `firestore_active` must also be true;
 - vulnerable effects equal 2;
 - protected effects equal 1;
 - protected blocked actions equal 1;
@@ -68,4 +70,3 @@ The production evidence is acceptable only when:
 If credits or credentials are unavailable, submit the reproducible local proof only
 if the rules permit it. Do not describe documented Firestore or Pub/Sub adapters as
 live production integrations.
-
