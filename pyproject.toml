@@ -1,0 +1,21 @@
+[project]
+name = "fleetshield"
+version = "0.1.0"
+description = "Failure-driven deterministic safety controls for autonomous agent fleets"
+requires-python = ">=3.11"
+license = { text = "MIT" }
+dependencies = []
+
+[project.optional-dependencies]
+google = [
+  "google-adk>=1.0.0",
+  "google-genai>=1.0.0",
+  "google-cloud-firestore>=2.20.0",
+  "google-cloud-pubsub>=2.25.0",
+]
+
+[project.scripts]
+fleetshield = "app.api:serve"
+
+[tool.setuptools]
+packages = ["app"]
