@@ -4,6 +4,7 @@ import json
 import mimetypes
 import os
 import base64
+from threading import RLock
 from dataclasses import asdict
 from http import HTTPStatus
 from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
@@ -13,16 +14,47 @@ from urllib.parse import urlparse
 from .engine import FleetShieldEngine
 from .faults import SUPPORTED_FAULTS
 from .state_store import get_state_store
+from .adk_agent import runtime_status
 
 
 ROOT = Path(__file__).resolve().parent
 STATIC = ROOT / "static"
 ENGINE = FleetShieldEngine()
 STORE = get_state_store()
+ENGINE_LOCK = RLock()
+
+
+def build_evidence() -> dict[str, object]:
+    """Expose judge-verifiable runtime facts without leaking credentials."""
+
+    adk = runtime_status()
+    return {
+        "service": "fleetshield",
+        "version": "0.2.0",
+        "runtime": {
+            "cloud_run": bool(os.getenv("K_SERVICE")),
+            "cloud_run_service": os.getenv("K_SERVICE", "local"),
+            "cloud_run_revision": os.getenv("K_REVISION", "local"),
+            "state_backend": STORE.backend,
+            **adk,
+        },
+        "last_discovery_sources": [
+            policy.get("discovered_from", "") for policy in ENGINE.enforcer.snapshot()
+        ],
+        "qualifying_evidence": {
+            "google_adk_executed": any(
+                str(policy.get("discovered_from", "")).startswith("google-adk:gemini:")
+                for policy in ENGINE.enforcer.snapshot()
+            ),
+            "firestore_active": STORE.backend == "firestore",
+            "cloud_run_active": bool(os.getenv("K_SERVICE")),
+            "pubsub_events_observed": bool(ENGINE.processed_messages),
+        },
+    }
 
 
 class FleetShieldHandler(BaseHTTPRequestHandler):
-    server_version = "FleetShield/0.1"
+    server_version = "FleetShield/0.2"
 
     def log_message(self, format: str, *args: object) -> None:
         if os.getenv("FLEETSHIELD_QUIET") != "1":
@@ -49,7 +81,11 @@ class FleetShieldHandler(BaseHTTPRequestHandler):
     def do_GET(self) -> None:  # noqa: N802
         path = urlparse(self.path).path
         if path == "/api/health":
-            self._json({"status": "ok", "service": "fleetshield", "version": "0.1.0"})
+            self._json({"status": "ok", "service": "fleetshield", "version": "0.2.0"})
+            return
+        if path == "/api/evidence":
+            with ENGINE_LOCK:
+                self._json(build_evidence())
             return
         if path == "/api/state":
             self._json(ENGINE.snapshot())
@@ -63,46 +99,54 @@ class FleetShieldHandler(BaseHTTPRequestHandler):
         path = urlparse(self.path).path
         try:
             payload = self._read_json()
-            if path == "/api/reset":
-                ENGINE.reset_runtime(keep_policies=bool(payload.get("keep_policies", False)))
-                self._json(ENGINE.snapshot())
-            elif path == "/api/run":
-                fault = str(payload.get("fault", "timeout_after_commit"))
-                if fault not in SUPPORTED_FAULTS:
-                    raise ValueError(f"Unknown fault: {fault}")
-                result = ENGINE.run(fault=fault)  # type: ignore[arg-type]
-                STORE.save_snapshot(ENGINE.snapshot())
-                self._json(result.to_dict())
-            elif path == "/api/discover":
-                policies = ENGINE.discover_from_last_failure()
-                STORE.save_snapshot(ENGINE.snapshot())
-                self._json({"policies": [asdict(policy) for policy in policies]})
-            elif path == "/api/activate":
-                policy_id = str(payload.get("policy_id", ""))
-                policy = ENGINE.activate_policy(policy_id, str(payload.get("approved_by", "demo-reviewer")))
-                STORE.save_snapshot(ENGINE.snapshot())
-                self._json({"policy": asdict(policy)})
-            elif path == "/api/demo":
-                result = ENGINE.full_demo()
-                STORE.save_snapshot(ENGINE.snapshot())
-                self._json(result)
-            elif path == "/api/events/pubsub":
-                message = payload.get("message", {})
-                if not isinstance(message, dict):
-                    raise ValueError("Pub/Sub message must be an object")
-                message_id = str(message.get("messageId") or message.get("message_id") or "")
-                if not message_id:
-                    raise ValueError("Pub/Sub messageId is required")
-                encoded = str(message.get("data", ""))
-                event = json.loads(base64.b64decode(encoded).decode()) if encoded else {}
-                fault = str(event.get("fault", "timeout_after_commit"))
-                if fault not in SUPPORTED_FAULTS:
-                    raise ValueError(f"Unknown fault: {fault}")
-                result = ENGINE.handle_event_once(message_id, fault)  # type: ignore[arg-type]
-                STORE.save_snapshot(ENGINE.snapshot())
-                self._json({"duplicate": result is None, "result": result.to_dict() if result else None})
-            else:
-                self._json({"error": "Not found"}, HTTPStatus.NOT_FOUND)
+            with ENGINE_LOCK:
+                if path == "/api/reset":
+                    ENGINE.reset_runtime(keep_policies=bool(payload.get("keep_policies", False)))
+                    self._json(ENGINE.snapshot())
+                elif path == "/api/run":
+                    fault = str(payload.get("fault", "timeout_after_commit"))
+                    if fault not in SUPPORTED_FAULTS:
+                        raise ValueError(f"Unknown fault: {fault}")
+                    result = ENGINE.run(fault=fault)  # type: ignore[arg-type]
+                    STORE.save_snapshot(ENGINE.snapshot())
+                    self._json(result.to_dict())
+                elif path == "/api/discover":
+                    policies = ENGINE.discover_from_last_failure()
+                    STORE.save_snapshot(ENGINE.snapshot())
+                    self._json({"policies": [asdict(policy) for policy in policies]})
+                elif path == "/api/activate":
+                    policy_id = str(payload.get("policy_id", ""))
+                    policy = ENGINE.activate_policy(policy_id, str(payload.get("approved_by", "demo-reviewer")))
+                    STORE.save_snapshot(ENGINE.snapshot())
+                    self._json({"policy": asdict(policy)})
+                elif path == "/api/demo":
+                    result = ENGINE.full_demo()
+                    STORE.save_snapshot(ENGINE.snapshot())
+                    self._json({**result, "runtime_evidence": build_evidence()})
+                elif path == "/api/events/pubsub":
+                    message = payload.get("message", {})
+                    if not isinstance(message, dict):
+                        raise ValueError("Pub/Sub message must be an object")
+                    message_id = str(message.get("messageId") or message.get("message_id") or "")
+                    if not message_id:
+                        raise ValueError("Pub/Sub messageId is required")
+                    encoded = str(message.get("data", ""))
+                    event = json.loads(base64.b64decode(encoded).decode()) if encoded else {}
+                    fault = str(event.get("fault", "timeout_after_commit"))
+                    if fault not in SUPPORTED_FAULTS:
+                        raise ValueError(f"Unknown fault: {fault}")
+                    claimed = STORE.claim_message(message_id)
+                    result = None
+                    if claimed:
+                        try:
+                            result = ENGINE.handle_event_once(message_id, fault)  # type: ignore[arg-type]
+                        except Exception:
+                            STORE.release_message(message_id)
+                            raise
+                    STORE.save_snapshot(ENGINE.snapshot())
+                    self._json({"duplicate": result is None, "result": result.to_dict() if result else None})
+                else:
+                    self._json({"error": "Not found"}, HTTPStatus.NOT_FOUND)
         except KeyError as exc:
             self._error(exc, HTTPStatus.NOT_FOUND)
         except (ValueError, RuntimeError, json.JSONDecodeError) as exc:

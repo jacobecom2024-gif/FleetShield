@@ -28,7 +28,7 @@ class FleetShieldEngine:
         if not keep_policies:
             self.enforcer = PolicyEnforcer()
 
-    def run(self, fault: FaultName = "timeout_after_commit", agent_id: str = "invoice-agent") -> ScenarioResult:
+    def run(self, fault: FaultName = "timeout_after_commit", agent_id: str = "relief-disbursement-agent") -> ScenarioResult:
         contract = self.fleet[agent_id]
         started = iso_now()
         run_id = str(uuid4())
@@ -50,7 +50,7 @@ class FleetShieldEngine:
         intent = ActionIntent(
             agent_id=contract.agent_id,
             tool_name=contract.tool_name,
-            subject_id="INV-2026-0042",
+            subject_id="RELIEF-2026-0042",
             amount=249.0,
             approved=True,
             metadata={"run_id": run_id, "fault": fault},
@@ -135,7 +135,7 @@ class FleetShieldEngine:
     def discover_from_last_failure(self) -> list[Policy]:
         if not self.last_result or self.last_result.safe:
             raise RuntimeError("A failing run is required before policy discovery")
-        affected = self.fleet["invoice-agent"]
+        affected = self.fleet["relief-disbursement-agent"]
         same_class = [
             contract.agent_id
             for contract in self.fleet.values()
@@ -149,10 +149,10 @@ class FleetShieldEngine:
             if invariant_type == "exactly_once":
                 policies.append(PolicyCompiler.exactly_once(same_class, source))
             elif invariant_type == "approval_threshold":
-                amount = float(candidate.get("amount", affected.approval_threshold))
+                amount = float(candidate.get("amount") or affected.approval_threshold)
                 policies.append(PolicyCompiler.approval_threshold(amount, same_class, source))
             elif invariant_type == "fresh_evidence":
-                max_age = int(candidate.get("max_age_seconds", affected.max_evidence_age_seconds))
+                max_age = int(candidate.get("max_age_seconds") or affected.max_evidence_age_seconds)
                 policies.append(PolicyCompiler.fresh_evidence(max_age, same_class, source))
         if not policies:
             raise RuntimeError("Contract Miner returned no allowlisted invariant candidates")
@@ -195,7 +195,7 @@ class FleetShieldEngine:
             "discovered": [asdict(policy) for policy in discovered],
             "activated": asdict(activated),
             "protected": protected.to_dict(),
-            "claim": "One failure produced a tested, deterministic control for the financial agent fleet.",
+            "claim": "One failure produced a tested, deterministic control for a community-relief agent fleet.",
         }
 
     def handle_event_once(self, message_id: str, fault: FaultName) -> ScenarioResult | None:

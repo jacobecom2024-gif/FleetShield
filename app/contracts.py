@@ -17,25 +17,24 @@ class AgentContract:
 
 DEMO_FLEET: tuple[AgentContract, ...] = (
     AgentContract(
-        agent_id="invoice-agent",
-        display_name="Invoice Agent",
-        tool_name="post_payment",
-        side_effect_class="financial",
-        promises=["Pay each approved invoice once", "Never reuse stale approval evidence"],
+        agent_id="relief-disbursement-agent",
+        display_name="Relief Disbursement Agent",
+        tool_name="release_emergency_grant",
+        side_effect_class="community_relief_funds",
+        promises=["Release each approved emergency grant once", "Never reuse stale eligibility evidence"],
     ),
     AgentContract(
-        agent_id="refund-agent",
-        display_name="Refund Agent",
-        tool_name="post_refund",
-        side_effect_class="financial",
-        promises=["Refund each order once", "Escalate high-value refunds"],
+        agent_id="medicine-voucher-agent",
+        display_name="Medicine Voucher Agent",
+        tool_name="issue_medicine_voucher",
+        side_effect_class="community_relief_funds",
+        promises=["Issue each approved medicine voucher once", "Escalate high-value aid"],
     ),
     AgentContract(
-        agent_id="payout-agent",
-        display_name="Payout Agent",
-        tool_name="post_payout",
-        side_effect_class="financial",
-        promises=["Pay each approved payout once", "Keep a durable audit trail"],
+        agent_id="shelter-payment-agent",
+        display_name="Shelter Payment Agent",
+        tool_name="pay_shelter_provider",
+        side_effect_class="community_relief_funds",
+        promises=["Pay each approved shelter placement once", "Keep a durable audit trail"],
     ),
 )
-
