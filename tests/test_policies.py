@@ -13,12 +13,12 @@ class PolicyTests(unittest.TestCase):
         self.assertEqual(first.policy_id, second.policy_id)
 
     def test_approval_threshold(self) -> None:
-        policy = PolicyCompiler.approval_threshold(500, ["refund-agent"], "test")
+        policy = PolicyCompiler.approval_threshold(500, ["medicine-voucher-agent"], "test")
         policy.state = "active"
         enforcer = PolicyEnforcer([policy])
         intent = ActionIntent(
-            agent_id="refund-agent",
-            tool_name="post_refund",
+            agent_id="medicine-voucher-agent",
+            tool_name="issue_medicine_voucher",
             subject_id="ORDER-9",
             amount=501,
             approved=False,
@@ -28,12 +28,12 @@ class PolicyTests(unittest.TestCase):
         self.assertEqual(len(violations), 1)
 
     def test_policy_scope_is_enforced(self) -> None:
-        policy = PolicyCompiler.approval_threshold(10, ["refund-agent"], "test")
+        policy = PolicyCompiler.approval_threshold(10, ["medicine-voucher-agent"], "test")
         policy.state = "active"
         enforcer = PolicyEnforcer([policy])
         unrelated = ActionIntent(
-            agent_id="invoice-agent",
-            tool_name="post_payment",
+            agent_id="relief-disbursement-agent",
+            tool_name="release_emergency_grant",
             subject_id="INV-1",
             amount=999,
         )

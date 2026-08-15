@@ -31,7 +31,7 @@ class FleetShieldEngineTests(unittest.TestCase):
         self.assertTrue(any(v.mode == "blocking" for v in result.violations))
 
     def test_shadow_policy_observes_but_does_not_block(self) -> None:
-        policy = PolicyCompiler.exactly_once(["invoice-agent"], "test")
+        policy = PolicyCompiler.exactly_once(["relief-disbursement-agent"], "test")
         policy.state = "shadow"
         self.engine.enforcer.register(policy)
 
@@ -47,7 +47,7 @@ class FleetShieldEngineTests(unittest.TestCase):
         self.assertEqual(result.actual_effects, 1)
 
     def test_stale_evidence_is_blocked(self) -> None:
-        policy = PolicyCompiler.fresh_evidence(900, ["invoice-agent"], "test")
+        policy = PolicyCompiler.fresh_evidence(900, ["relief-disbursement-agent"], "test")
         policy.state = "active"
         self.engine.enforcer.register(policy)
         result = self.engine.run("stale_evidence")
