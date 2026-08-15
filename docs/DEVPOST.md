@@ -61,7 +61,7 @@ activation: the model cannot approve its own rule.
 - Scoped propagation across a three-agent fleet
 - Explicit delegation across three specialist Google ADK agents
 - Exact replay with machine-readable evidence
-- Credential-free dashboard and 13 passing tests
+- Credential-free dashboard and 14 passing tests
 - Independent verifier for local proof and live Google Cloud evidence
 
 ## What we learned
