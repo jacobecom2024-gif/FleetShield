@@ -1,0 +1,128 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="description" content="FleetShield turns one agent failure into a tested deterministic control for the fleet." />
+    <title>FleetShield — One failure immunizes the fleet</title>
+    <link rel="stylesheet" href="/styles.css" />
+  </head>
+  <body>
+    <div class="noise"></div>
+    <header class="topbar">
+      <a class="brand" href="/" aria-label="FleetShield home">
+        <span class="mark">FS</span>
+        <span>FleetShield</span>
+      </a>
+      <div class="system-status"><span class="dot"></span> sandbox online</div>
+    </header>
+
+    <main>
+      <section class="hero">
+        <div>
+          <p class="eyebrow">Failure-driven safety for autonomous agents</p>
+          <h1>One failure.<br /><span>Fleet-wide immunity.</span></h1>
+          <p class="lede">
+            FleetShield breaks an agent safely, discovers the violated invariant,
+            compiles a deterministic control, and proves the fix under exact replay.
+          </p>
+          <div class="actions">
+            <button class="primary" id="run-demo">Run the 90-second proof</button>
+            <button class="secondary" id="reset">Reset sandbox</button>
+          </div>
+        </div>
+        <div class="scorecard" aria-label="Current proof status">
+          <p class="label">PROOF STATUS</p>
+          <div class="score" id="proof-score">0<span>/4</span></div>
+          <div class="meter"><span id="meter-fill"></span></div>
+          <p id="proof-copy">Ready to inject a controlled failure.</p>
+        </div>
+      </section>
+
+      <section class="proof-grid" aria-live="polite">
+        <article class="panel controls">
+          <div class="panel-heading">
+            <div>
+              <p class="step">CONTROL PLANE</p>
+              <h2>Experiment</h2>
+            </div>
+            <span class="chip">sandbox only</span>
+          </div>
+          <label for="fault">Fault to inject</label>
+          <select id="fault">
+            <option value="timeout_after_commit">Timeout after commit</option>
+            <option value="duplicate_event">Duplicate event</option>
+            <option value="malformed_tool_result">Malformed result after commit</option>
+            <option value="rate_limit_then_retry">429 before commit</option>
+            <option value="stale_evidence">Stale evidence</option>
+          </select>
+          <div class="button-stack">
+            <button id="run-vulnerable">1 — Break vulnerable agent</button>
+            <button id="discover" disabled>2 — Discover invariants</button>
+            <button id="activate" disabled>3 — Approve deterministic control</button>
+            <button id="replay" disabled>4 — Replay exact failure</button>
+          </div>
+          <p class="microcopy">No real payment, credential, or external system is touched.</p>
+        </article>
+
+        <article class="panel outcome">
+          <div class="panel-heading">
+            <div>
+              <p class="step">SIDE-EFFECT LEDGER</p>
+              <h2>Expected 1 · observed <span id="effect-count">0</span></h2>
+            </div>
+            <span class="verdict neutral" id="verdict">READY</span>
+          </div>
+          <div class="ledger" id="ledger">
+            <div class="empty">The sandbox ledger is empty.</div>
+          </div>
+        </article>
+
+        <article class="panel trace-panel">
+          <div class="panel-heading">
+            <div>
+              <p class="step">REPLAYABLE TRACE</p>
+              <h2>Execution evidence</h2>
+            </div>
+            <span class="chip" id="trace-count">0 events</span>
+          </div>
+          <ol class="trace" id="trace">
+            <li class="trace-empty">Run an experiment to generate evidence.</li>
+          </ol>
+        </article>
+
+        <article class="panel policy-panel">
+          <div class="panel-heading">
+            <div>
+              <p class="step">POLICY COMPILER</p>
+              <h2>Fleet controls</h2>
+            </div>
+            <span class="chip">3 agents</span>
+          </div>
+          <div id="policies" class="policy-list">
+            <div class="empty">No invariant has been discovered.</div>
+          </div>
+        </article>
+      </section>
+
+      <section class="fleet-strip">
+        <div>
+          <p class="step">PROTECTED FLEET</p>
+          <h2>A control learned once, scoped before propagation.</h2>
+        </div>
+        <div class="fleet">
+          <div class="agent"><span>I</span><b>Invoice</b><small>post_payment</small></div>
+          <div class="agent"><span>R</span><b>Refund</b><small>post_refund</small></div>
+          <div class="agent"><span>P</span><b>Payout</b><small>post_payout</small></div>
+        </div>
+      </section>
+    </main>
+
+    <footer>
+      <span>Built for the All Things Agentic Hackathon</span>
+      <span>Gemini · Google ADK · Cloud Run · Pub/Sub · Firestore</span>
+    </footer>
+    <script src="/app.js" defer></script>
+  </body>
+</html>
+
