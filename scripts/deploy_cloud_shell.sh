@@ -66,8 +66,8 @@ gcloud run deploy "${SERVICE}" \
   --platform=managed \
   --service-account="${RUNTIME_SA_EMAIL}" \
   --allow-unauthenticated \
-  --min=0 \
-  --max=1 \
+  --min-instances=0 \
+  --max-instances=1 \
   --cpu=1 \
   --memory=512Mi \
   --concurrency=20 \
