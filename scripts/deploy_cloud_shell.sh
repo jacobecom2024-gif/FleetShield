@@ -57,8 +57,12 @@ if ! gcloud pubsub topics describe fleetshield-events >/dev/null 2>&1; then
   gcloud pubsub topics create fleetshield-events
 fi
 
-python -m unittest discover -s tests -v
-gcloud builds submit --tag "${IMAGE}" .
+env -u GOOGLE_API_KEY \
+  -u GOOGLE_CLOUD_PROJECT \
+  -u GOOGLE_CLOUD_LOCATION \
+  -u GOOGLE_GENAI_USE_VERTEXAI \
+  python -m unittest discover -s tests -v
+  gcloud builds submit --tag "${IMAGE}" .
 
 gcloud run deploy "${SERVICE}" \
   --image="${IMAGE}" \
